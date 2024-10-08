@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from starlette.responses import HTMLResponse
 from models import Base, Word
 from fastapi import FastAPI, Depends, HTTPException, Form, Request
+from models import Guess
 
 SQLALCHEMY_DB_URL = "sqlite:///./words.db"
 engine: Engine = create_engine(
@@ -68,7 +69,7 @@ async def read_root(request: Request):
 
 
 @app.post("/guess")
-async def guess_letter(request: Request, guess: str = Form(...)):
+async def guess_letter(request: Request, guess: Guess = Form(...)):
     with session_local() as session:
         word = get_random_word(session)
         if word:
