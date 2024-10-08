@@ -14,7 +14,9 @@ engine: Engine = create_engine(
 session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="TicTac API",
+    version="1.0.0")
 templates = Jinja2Templates(directory="template")
 
 
@@ -29,7 +31,8 @@ def get_db():
 @app.get("/word/")
 def read_words(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     words = db.query(Word).offset(skip).limit(limit).all()
-    return words
+    count_words = len(words) # Количество слов в БД
+    return words, f"Слов всего: {count_words}" # Можно ли перенести количество слов всего на др строку??
 
 
 @app.post("/create_word/")
@@ -39,6 +42,17 @@ def create_word(word: str, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_word)
     return db_word
+
+
+@app.delete("/delete_word/{word_id}")  # Эндпоинт удаления слова из БД (Обновление ИД после удаления???)
+def delete_word(word_id: int, db: Session = Depends(get_db)):
+    word = db.query(Word).filter(Word.id == word_id).first()
+    if word:
+        db.delete(word)
+        db.commit()
+        return {"message": "Слово удалено"}
+    else:
+        return {"message": "Слово не найдено"}
 
 
 def get_random_word(session):
@@ -69,7 +83,8 @@ async def read_root(request: Request):
 
 
 @app.post("/guess")
-async def guess_letter(request: Request, guess: Guess = Form(...)): # Добавлен валидатор BaseModel
+async def guess_letter(request: Request, guess: Guess = Form(...)):  # Добавлена модель структуры данных
+    # (наследуемая от BaseModel), а так же валидация данных.
     with session_local() as session:
         word = get_random_word(session)
         if word:
@@ -83,3 +98,5 @@ async def guess_letter(request: Request, guess: Guess = Form(...)): # Добав
                 "index.html", {"request": request, "hidden_word": hidden_word}
             )
         return {"message": "No words in the database"}
+
+# Как можно применить HTTPException?

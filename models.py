@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, validator
+from typing import List
 
 Base = declarative_base()
 
@@ -12,7 +13,7 @@ class Word(Base):
     is_guesses = Column(Boolean, default=False)
 
 
-class Guess(BaseModel):  # Модель для ввода ответа
+class Guess(BaseModel):  # Определяем модель структуры данных для Guess, а так же валидируем данные
     guess: str
 
     @validator('guess')
