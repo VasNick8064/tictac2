@@ -69,15 +69,16 @@ async def read_root(request: Request):
 
 
 @app.post("/guess")
-async def guess_letter(request: Request, guess: Guess = Form(...)):
+async def guess_letter(request: Request, guess: Guess = Form(...)): # Добавлен валидатор BaseModel
     with session_local() as session:
         word = get_random_word(session)
         if word:
             hidden_word = hide_letters(word)
-            if guess in word:
+            guessed_letter = guess.guess
+            if guessed_letter in word:
                 for i, letter in enumerate(word):
-                    if letter == guess:
-                        hidden_word[i] = guess
+                    if letter == guessed_letter:
+                        hidden_word[i] = guessed_letter
             return templates.TemplateResponse(
                 "index.html", {"request": request, "hidden_word": hidden_word}
             )

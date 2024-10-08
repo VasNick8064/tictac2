@@ -11,11 +11,14 @@ class Word(Base):
     word = Column(String, unique=True)
     is_guesses = Column(Boolean, default=False)
 
-class Guess(BaseModel):
+
+class Guess(BaseModel):  # Модель для ввода ответа
     guess: str
 
     @validator('guess')
     def guess_length(cls, v):
         if len(v) > 1:
             raise ValueError("Введите не более одного символа")
+        if not v.isalpha():
+            raise ValueError("Введите букву")
         return v
