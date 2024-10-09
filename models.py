@@ -1,8 +1,11 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, validator
-from typing import List
 
+"""
+declarative_base: Это функция из библиотеки SQLAlchemy, которая создает “базовый” класс (Base Class) для моделей данных.
+ Этот класс служит основой для моделей данных, которые определяются позже.
+"""
 Base = declarative_base()
 
 
@@ -25,7 +28,7 @@ class Guess(BaseModel):  # Определяем модель структуры 
         return v
 
 
-class Create_Word(BaseModel):  # Определяем модель структуры данных для /cw, а так же валидируем данные
+class Create_word(BaseModel):  # Определяем модель структуры данных для /cw, а так же валидируем данные
     word: str
 
     @validator("word")
