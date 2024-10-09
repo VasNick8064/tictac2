@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить слово</title>
+</head>
+<body>
+    <h1>Удалить слово из базы данных</h1>
+
+    <form id="delete-word-form">
+        <label for="word_id">Введите ID слова в БД:</label>
+        <input type="text" id="word_id" name="word_id" required>
+
+        <button type="submit">Удалить</button>
+    </form>
+
+     <a href="/">
+        <button type="button">Вернуться</button>
+    </a>
+
+    <a href="/word">
+        <button type="button">Посмотреть БД</button>
+    </a>
+
+    <a href="/create_word">
+        <button type="button">Добавить слово в БД</button>
+    </a>
+
+    <script>
+        const deleteWordForm = document.getElementById("delete-word-form");
+
+        deleteWordForm.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+            const wordId = document.getElementById("word_id").value;
+            const url = `/dw/${wordId}`; // Формируем URL
+
+            try {
+                const response = await fetch(url, { // Отправка запроса DELETE
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Обработка успешного удаления
+                    alert("Слово удалено из БД!");
+                    // Возможно, вы захотите перенаправить пользователя на другую страницу
+                } else {
+                    // Обработка ошибки удаления
+                    console.error("Ошибка удаления слова:", response);
+                    alert("Произошла ошибка при удалении слова.");
+                }
+            } catch (error) {
+                // Обработка ошибки сети
+                console.error("Ошибка сети:", error);
+                alert("Произошла ошибка при отправке запроса.");
+            }
+        });
+    </script>
+</body>
+</html>

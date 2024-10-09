@@ -70,7 +70,7 @@ def read_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.post("/cw")
 def create_word(db: Session = Depends(get_db), request: Request = None, word: Create_word = Form(...)):
-    db_word = Word(word=word.word) # word.word - извлекаем значение из переменной word, которое хранится в объекте
+    db_word = Word(word=word.word)  # word.word - извлекаем значение из переменной word, которое хранится в объекте
     # Create_word
     db.add(db_word)
     db.commit()
@@ -90,15 +90,22 @@ async def read_root(request: Request):
 'Удаление слова из БД'
 
 
-@app.delete("/delete_word/{word_id}")
-def delete_word(word_id: int, db: Session = Depends(get_db)):
+@app.get("/delete_word")
+async def read_root(request: Request):
+    return templates.TemplateResponse(
+        "delete_word.html", {"request": request}
+    )
+
+
+@app.delete("/dw/{word_id}")
+def delete_word(word_id: int, request: Request = None, db: Session = Depends(get_db)):
     word = db.query(Word).filter(Word.id == word_id).first()
     if word:
         db.delete(word)
         db.commit()
-        return {"message": "Слово удалено"}
-    else:
-        return {"message": "Слово не найдено"}
+        return templates.TemplateResponse(
+            "create_word.html", {"request": request, "word": word, "message": "Слово удалено из БД"}
+        )
 
 
 'Получение рандомного слова из БД'
@@ -161,3 +168,6 @@ async def guess_letter(request: Request, guess: Guess = Form(...)):  # Доба�
 # Можно ли в /word/ перенести количество слов всего на др строку?
 # Почему в /guess Query параметр request: Request, а в /cw request: Request = None?
 # Использование // и / в эндпоинтах
+
+# Фронт страницы удаления слова написана с помощью гпт4, т.к метод DELETE не поддерживается.
+# Сраница написана с использованием JS
