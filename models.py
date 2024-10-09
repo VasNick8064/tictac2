@@ -13,7 +13,7 @@ class Word(Base):
     is_guesses = Column(Boolean, default=False)
 
 
-class Guess(BaseModel):  # Определяем модель структуры данных для Guess, а так же валидируем данные
+class Guess(BaseModel):  # Определяем модель структуры данных для /guess, а так же валидируем данные
     guess: str
 
     @validator('guess')
@@ -22,4 +22,16 @@ class Guess(BaseModel):  # Определяем модель структуры 
             raise ValueError("Введите не более одного символа")
         if not v.isalpha():
             raise ValueError("Введите букву")
+        return v
+
+
+class Create_Word(BaseModel):  # Определяем модель структуры данных для /cw, а так же валидируем данные
+    word: str
+
+    @validator("word")
+    def word_valid(cls, v):
+        if len(v) < 2:
+            raise ValueError("Слово не может быть короче 2х символов")
+        if not v.isalpha():
+            raise ValueError("Слово должно состоять из символов")
         return v
